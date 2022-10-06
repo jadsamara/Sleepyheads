@@ -1,5 +1,5 @@
 // Stopwatch front end for sleeping screen
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Text,
   View,
@@ -7,7 +7,6 @@ import {
   ScrollView,
   Dimensions,
   Alert,
-  AppState,
 } from "react-native";
 import styled from "styled-components/native";
 
@@ -34,7 +33,6 @@ import { TimerContext } from "./TimerProvider";
 export const NewStopwatch = ({ type, val }) => {
   const user = auth.currentUser.email;
   const formatted = format(new Date(), "h:mm aaaaa'm'");
-  const appState = useRef(AppState.currentState);
 
   let interval = null;
   let newNap = null;
@@ -46,17 +44,10 @@ export const NewStopwatch = ({ type, val }) => {
   const [dateStart, setDateStart] = useState();
   const [time, setTime] = useState(formatted);
   const [timerOn, setTimerOn] = useState();
-  const [appStateVisible, setAppStateVisible] = useState(true);
   const [nap, setNap] = useState();
 
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", handleAppState);
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
-  useEffect(() => {
+    // Stopwatch Function
     const updateElapsedTime = () => {
       setTimer(Date.now() - dateStart + timer);
     };
@@ -71,16 +62,18 @@ export const NewStopwatch = ({ type, val }) => {
   }, [dateStart, type, timerOn]);
 
   useEffect(() => {
-    if (!appStateVisible || buttonState === "Stop") {
+    // Sends data to db
+    if (buttonState === "Stop") {
       fireSetData();
     }
 
     return () => {
       fireSetData();
     };
-  }, [appStateVisible, buttonState]);
+  }, [buttonState]);
 
   useEffect(() => {
+    // gets db data on startup
     getData();
   }, []);
 
@@ -115,7 +108,7 @@ export const NewStopwatch = ({ type, val }) => {
       if (!dateStart) {
         setDateStart(Date.now());
       }
-      if (time === formatted) {
+      if (time === formatted || time === newForm) {
         const newForm = format(new Date(), "h:mm aaaaa'm'");
         setTime(newForm);
       }
@@ -168,22 +161,6 @@ export const NewStopwatch = ({ type, val }) => {
       dateEnd,
       randomID,
     });
-  };
-
-  const handleAppState = (nextAppState) => {
-    if (
-      appState.current.match(/inactive|background/) &&
-      nextAppState === "active"
-    ) {
-      setAppStateVisible(true);
-    }
-    if (appState.current.match(/active/)) {
-      if (nextAppState === "inactive" || nextAppState === "background") {
-        setAppStateVisible(false);
-      }
-    }
-
-    appState.current = nextAppState;
   };
 
   const confirmDate = (date) => {

@@ -172,8 +172,8 @@ export const TimerCardList = ({ buttonState, type }) => {
     Notifications.cancelAllScheduledNotificationsAsync();
     Notifications.scheduleNotificationAsync({
       content: {
-        title: "Baby Tracker App",
-        body: "15 mins until next nap!",
+        title: "Sleepyheads",
+        body: "Time to sleep soon.",
         sound: true,
       },
       trigger,

@@ -14,19 +14,19 @@
       },
       "oauth_client": [
         {
-          "client_id": "398899297073-1q9qpihekhchr752eku7umd1lf90bvia.apps.googleusercontent.com",
+          "client_id": "398899297073-9mnt37btilafc7217le1n6kfsrgvaciv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pinkasolutions.sleepyhead",
+            "certificate_hash": "8a92e514ae0cd1d07d183edf05c795a0300e66dc"
+          }
+        },
+        {
+          "client_id": "398899297073-dvjieg69cfaga0ctv2jb35pdb130rvnt.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.pinkasolutions.sleepyhead",
             "certificate_hash": "a2eb5541b9767dbe1c46724a5925fe9ea9e5ae35"
-          }
-        },
-        {
-          "client_id": "398899297073-9qc950c2qir5mmems706ccqk5f2g7ntb.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.pinkasolutions.sleepyhead",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
           }
         },
         {

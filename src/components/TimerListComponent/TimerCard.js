@@ -54,6 +54,7 @@ const StartTimeText = styled(Text)`
   font-size: 14px;
   font-weight: bold;
   margin-top: 1%;
+  padding: 3px;
 `;
 
 const TextButtonContainer = styled(View)`
