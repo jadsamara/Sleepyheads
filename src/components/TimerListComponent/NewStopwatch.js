@@ -108,8 +108,8 @@ export const NewStopwatch = ({ type, val }) => {
       if (!dateStart) {
         setDateStart(Date.now());
       }
+      const newForm = format(new Date(), "h:mm aaaaa'm'");
       if (time === formatted || time === newForm) {
-        const newForm = format(new Date(), "h:mm aaaaa'm'");
         setTime(newForm);
       }
     }

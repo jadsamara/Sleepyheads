@@ -4,7 +4,6 @@ export const TimerContext = createContext({});
 
 export const TimerProvider = ({ children }) => {
   const [napText, setNapText] = useState();
-
   return (
     <TimerContext.Provider
       value={{
