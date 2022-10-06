@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "398899297073",
+    "project_id": "babyapp-beb55",
+    "storage_bucket": "babyapp-beb55.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:398899297073:android:83fcbc72b88693d0a28e10",
+        "android_client_info": {
+          "package_name": "com.pinkasolutions.sleepyhead"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "398899297073-1q9qpihekhchr752eku7umd1lf90bvia.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pinkasolutions.sleepyhead",
+            "certificate_hash": "a2eb5541b9767dbe1c46724a5925fe9ea9e5ae35"
+          }
+        },
+        {
+          "client_id": "398899297073-9qc950c2qir5mmems706ccqk5f2g7ntb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pinkasolutions.sleepyhead",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "398899297073-0qo1rp82jirhe4pomovfcik2ksv4mj59.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ilD5xN9toz3sCghEiWZiTRVRHUZTp0I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "398899297073-0qo1rp82jirhe4pomovfcik2ksv4mj59.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "398899297073-42ki4ou1e31nc2k4o4ov5rsdv8gmonhn.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.pinkasolutions.sleepyhead"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>398899297073-42ki4ou1e31nc2k4o4ov5rsdv8gmonhn.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.398899297073-42ki4ou1e31nc2k4o4ov5rsdv8gmonhn</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>398899297073-sfs45dfidvt64fssj8q84lcib4tqglfc.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyA1nn0foy2CisZeQIQ1Ss6Rzb59RmeNBpM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>398899297073</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.pinkasolutions.sleepyhead</string>
+	<key>PROJECT_ID</key>
+	<string>babyapp-beb55</string>
+	<key>STORAGE_BUCKET</key>
+	<string>babyapp-beb55.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:398899297073:ios:76244a32eb4eb2bba28e10</string>
+</dict>
+</plist>

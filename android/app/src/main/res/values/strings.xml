@@ -1,0 +1,7 @@
+<resources>
+  <string name="app_name">Sleepyheads</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="facebook_app_id">1778847382452352</string>
+<string name="facebook_client_token">032146dfa6822f97dc4957b1730593ea</string>
+</resources>
