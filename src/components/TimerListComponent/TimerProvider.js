@@ -40,14 +40,14 @@ export const TimerProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const oneDate = Date.now();
+    // const oneDate = Date.now();
 
-    // const oneDate = Date.now() - 86400000;
-    // const twoDate = Date.now() - 172800000;
-    // const threeDate = Date.now() - 259200000;
+    const oneDate = Date.now() - 86400000;
+    const twoDate = Date.now() - 172800000;
+    const threeDate = Date.now() - 259200000;
     checkThreeDay(oneDate);
-    // checkThreeDay(twoDate);
-    // checkThreeDay(threeDate);
+    checkThreeDay(twoDate);
+    checkThreeDay(threeDate);
   }, [napText]);
 
   return (

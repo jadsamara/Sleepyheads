@@ -109,9 +109,8 @@ export const NewStopwatch = ({ type, val }) => {
         setDateStart(Date.now());
       }
       const newForm = format(new Date(), "h:mm aaaaa'm'");
-      if (time === formatted || time === newForm) {
-        setTime(newForm);
-      }
+
+      setTime(newForm);
     }
   };
 
@@ -173,9 +172,9 @@ export const NewStopwatch = ({ type, val }) => {
     }
     const formattedDate = format(date, "h:mm aaaaa'm'");
     setTime(formattedDate);
-    setTimerOn(false);
-    setButtonState("Start");
-    setTimer(0);
+    // setTimerOn(false);
+    // setButtonState("Start");
+    // setTimer(0);
   };
 
   const onHandleOpenDate = () => {

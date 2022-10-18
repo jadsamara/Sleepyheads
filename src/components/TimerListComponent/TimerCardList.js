@@ -6,6 +6,7 @@ import * as Notifications from "expo-notifications";
 
 import { TimerContext } from "./TimerProvider";
 import { TimerCard } from "./TimerCard";
+import { HandleNotification } from "../reusable/HandleNotification";
 
 import DatePicker from "react-native-date-picker";
 import { parse, differenceInMonths, format } from "date-fns";
@@ -31,6 +32,7 @@ export const TimerCardList = ({ buttonState, type }) => {
   const [arr, setArr] = useState([]);
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const [editedOn, setEditedOn] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
@@ -82,6 +84,7 @@ export const TimerCardList = ({ buttonState, type }) => {
 
   const confirmDate = async (date) => {
     setOpenDatePicker(false);
+    setEditedOn(true);
     if (date > arr[0].dateStart) {
       const docRef = collection(database, type);
       const q = query(docRef, where("randomID", "==", arr[0].randomID));
@@ -102,10 +105,12 @@ export const TimerCardList = ({ buttonState, type }) => {
         let timerData = displayHours + ": " + displayMins + ": " + displaySecs;
 
         data.timerData = timerData;
-
         await updateDoc(doc.ref, data);
         setRefresh(true);
       });
+
+      // HandleNotification({})
+
       const docRefBabies = doc(database, "babies", user);
       const docSnapBabies = await getDoc(docRefBabies);
       const dob = docSnapBabies.data().dob;
