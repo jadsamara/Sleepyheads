@@ -27,10 +27,10 @@ import {
 export const TimerCardList = ({ buttonState, type }) => {
   const user = auth.currentUser.email;
 
-  const { setNapText } = useContext(TimerContext);
+  const { setNapText, flag } = useContext(TimerContext);
   const [arr, setArr] = useState([]);
   const [openDatePicker, setOpenDatePicker] = useState(false);
-  const [flag, setFlag] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
@@ -56,9 +56,9 @@ export const TimerCardList = ({ buttonState, type }) => {
       });
       setArr(temp);
     };
-    setFlag(false);
+    setRefresh(false);
     getData();
-  }, [buttonState, type, flag]);
+  }, [buttonState, type, refresh]);
 
   const deleteItem = async (randomID, index) => {
     const docRef = collection(database, type);
@@ -104,7 +104,7 @@ export const TimerCardList = ({ buttonState, type }) => {
         data.timerData = timerData;
 
         await updateDoc(doc.ref, data);
-        setFlag(true);
+        setRefresh(true);
       });
       const docRefBabies = doc(database, "babies", user);
       const docSnapBabies = await getDoc(docRefBabies);

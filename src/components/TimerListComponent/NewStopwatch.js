@@ -1,5 +1,5 @@
 // Stopwatch front end for sleeping screen
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import {
   Text,
   View,
@@ -37,7 +37,7 @@ export const NewStopwatch = ({ type, val }) => {
   let interval = null;
   let newNap = null;
 
-  const { setNapText } = useContext(TimerContext);
+  const { setNapText, flag } = useContext(TimerContext);
   const [buttonState, setButtonState] = useState("Start");
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [timer, setTimer] = useState(0);
@@ -89,7 +89,7 @@ export const NewStopwatch = ({ type, val }) => {
   const onHandleTimer = () => {
     if (timerOn) {
       if (type === "SleepingTimer") {
-        HandleNotification({ setNap });
+        HandleNotification({ setNap, flag });
       }
       setTimerOn(false);
       setTimer(0);

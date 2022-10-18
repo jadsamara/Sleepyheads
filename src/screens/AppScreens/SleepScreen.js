@@ -26,7 +26,7 @@ export const SleepScreen = ({ navigation: { goBack } }) => {
     if (docSnap.exists()) {
       const data = docSnap.data();
 
-      if (data.newNap && data.newNap > Date.now()) {
+      if (data.newNap && data.newNap > Date.now() - 86400000) {
         const formattedtimeToNext = format(data.newNap, "h:mm aaaaa'm'");
         setNapText(formattedtimeToNext);
       } else {
