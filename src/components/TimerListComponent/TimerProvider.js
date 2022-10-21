@@ -1,4 +1,4 @@
-import React, { useState, createContext, useEffect, useRef } from "react";
+import React, { useState, createContext, useEffect } from "react";
 import { auth, database } from "../../config/firebase";
 import { collection, getDocs, where, query, orderBy } from "firebase/firestore";
 
@@ -11,8 +11,6 @@ export const TimerProvider = ({ children }) => {
   const [flag, setFlag] = useState(false);
 
   const user = auth.currentUser.email;
-
-  // const flagRef = useRef(false);
 
   const checkThreeDay = async (date) => {
     const temp = [];
@@ -41,7 +39,6 @@ export const TimerProvider = ({ children }) => {
 
   useEffect(() => {
     // const oneDate = Date.now();
-
     const oneDate = Date.now() - 86400000;
     const twoDate = Date.now() - 172800000;
     const threeDate = Date.now() - 259200000;

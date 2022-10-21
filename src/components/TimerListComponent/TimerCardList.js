@@ -9,7 +9,7 @@ import { TimerCard } from "./TimerCard";
 import { HandleNotification } from "../reusable/HandleNotification";
 
 import DatePicker from "react-native-date-picker";
-import { parse, differenceInMonths, format } from "date-fns";
+import { format } from "date-fns";
 
 import { auth, database } from "../../config/firebase";
 import {
@@ -21,8 +21,6 @@ import {
   deleteDoc,
   updateDoc,
   doc,
-  getDoc,
-  setDoc,
 } from "firebase/firestore";
 
 export const TimerCardList = ({ buttonState, type }) => {
@@ -84,18 +82,14 @@ export const TimerCardList = ({ buttonState, type }) => {
 
   const confirmDate = async (date) => {
     setOpenDatePicker(false);
-    setEditedOn(true);
     if (date > arr[0].dateStart) {
       const docRef = collection(database, type);
       const q = query(docRef, where("randomID", "==", arr[0].randomID));
       const querySnapshot = await getDocs(q);
-
       querySnapshot.forEach(async (doc) => {
         const data = doc.data();
         data.dateEnd = date.getTime();
-
         const timer = date.getTime() - data.dateStart;
-
         const hours = Math.floor(timer / 1000 / 60 / 60);
         const mins = Math.floor((timer / 1000 / 60) % 60);
         const seconds = Math.floor((timer / 1000) % 60);
@@ -103,90 +97,23 @@ export const TimerCardList = ({ buttonState, type }) => {
         const displayMins = mins < 10 ? `0${mins}` : mins;
         const displaySecs = seconds < 10 ? `0${seconds}` : seconds;
         let timerData = displayHours + ": " + displayMins + ": " + displaySecs;
-
         data.timerData = timerData;
         await updateDoc(doc.ref, data);
         setRefresh(true);
       });
-
-      // HandleNotification({})
-
-      const docRefBabies = doc(database, "babies", user);
-      const docSnapBabies = await getDoc(docRefBabies);
-      const dob = docSnapBabies.data().dob;
-
-      if (dob) {
-        const birth = parse(dob, "MM/dd/yyyy", new Date());
-        const month = differenceInMonths(new Date(), birth);
-        switchFunc(month, date);
+      Notifications.cancelAllScheduledNotificationsAsync();
+      if (type === "SleepingTimer") {
+        HandleNotification({ setNapText, flag, editedOn, date });
       }
     } else {
       Alert.alert("Cannot have end time less than start time");
     }
+    setEditedOn(false);
   };
-  const switchFunc = async (month, date) => {
-    let trigger;
-    if (month === 0) {
-      trigger = date.getTime() + 1500000;
-
-      // trigger = Date.now() + 10000;
-    } else if (month > 0 && month <= 1) {
-      trigger = date.getTime() + 2400000;
-    } else if (month > 1 && month <= 2) {
-      trigger = date.getTime() + 3900000;
-    } else if (month > 2 && month <= 3) {
-      trigger = date.getTime() + 4800000;
-    } else if (month > 3 && month <= 4) {
-      trigger = date.getTime() + 5550000;
-    } else if (month > 4 && month <= 5) {
-      trigger = date.getTime() + 6300000;
-    } else if (month > 5 && month <= 6) {
-      trigger = date.getTime() + 9450000;
-    } else if (month > 6 && month <= 7) {
-      trigger = date.getTime() + 10800000;
-    } else if (month > 7 && month <= 8) {
-      trigger = date.getTime() + 12300000;
-    } else if (month > 8 && month <= 9) {
-      trigger = date.getTime() + 12900000;
-    } else if (month > 9 && month <= 10) {
-      trigger = date.getTime() + 14400000;
-    } else if (month > 10 && month <= 11) {
-      trigger = date.getTime() + 15300000;
-    } else if (month > 11 && month <= 12) {
-      trigger = date.getTime() + 16200000;
-    } else if (month > 12 && month <= 17) {
-      trigger = date.getTime() + 18000000;
-    } else if (month > 17 && month <= 18) {
-      trigger = date.getTime() + 19800000;
-    } else if (month > 18 && month <= 30) {
-      trigger = date.getTime() + 19800000;
-    }
-
-    if (type === "SleepingTimer") {
-      sendPushNotification(trigger);
-      const newNap = trigger + 900000;
-      const formattedtimeToNext = format(newNap, "h:mm aaaaa'm'");
-      setNapText(formattedtimeToNext);
-      await setDoc(doc(database, "CurrentSleep", user), {
-        newNap,
-      });
-    }
-  };
-
-  async function sendPushNotification(trigger) {
-    Notifications.cancelAllScheduledNotificationsAsync();
-    Notifications.scheduleNotificationAsync({
-      content: {
-        title: "Sleepyheads",
-        body: "Time to sleep soon.",
-        sound: true,
-      },
-      trigger,
-    });
-  }
 
   const editItem = () => {
     setOpenDatePicker(true);
+    setEditedOn(true);
   };
 
   const cancelDate = () => {

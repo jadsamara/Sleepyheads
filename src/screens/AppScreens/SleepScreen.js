@@ -25,12 +25,10 @@ export const SleepScreen = ({ navigation: { goBack } }) => {
 
     if (docSnap.exists()) {
       const data = docSnap.data();
-
       if (data.newNap && data.newNap > Date.now() - 86400000) {
         const formattedtimeToNext = format(data.newNap, "h:mm aaaaa'm'");
-        setNapText(formattedtimeToNext);
-      } else {
-        setNapText("");
+        const newText = "Time to sleep: " + formattedtimeToNext;
+        setNapText(newText);
       }
     }
   };
@@ -49,7 +47,7 @@ export const SleepScreen = ({ navigation: { goBack } }) => {
         </BackButtonContainer>
         <Container>
           <NextNapContainer>
-            <Text>{napText ? "Time to sleep " + napText : " "}</Text>
+            <Text>{napText}</Text>
           </NextNapContainer>
           <HeaderContainer>
             <HeaderText>Sleep</HeaderText>

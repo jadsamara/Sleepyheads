@@ -36,6 +36,9 @@ export const NewStopwatch = ({ type, val }) => {
 
   let interval = null;
   let newNap = null;
+  let wakeUpAt = null;
+
+  const formattedDate = useRef();
 
   const { setNapText, flag } = useContext(TimerContext);
   const [buttonState, setButtonState] = useState("Start");
@@ -62,14 +65,11 @@ export const NewStopwatch = ({ type, val }) => {
   }, [dateStart, type, timerOn]);
 
   useEffect(() => {
-    // Sends data to db
+    // Sends data to db when timer starts
     if (buttonState === "Stop") {
+      wakeUpAt = 10192879817;
       fireSetData();
     }
-
-    return () => {
-      fireSetData();
-    };
   }, [buttonState]);
 
   useEffect(() => {
@@ -81,13 +81,15 @@ export const NewStopwatch = ({ type, val }) => {
     if (nap && type === "SleepingTimer") {
       newNap = nap;
       const formattedtimeToNext = format(newNap, "h:mm aaaaa'm'");
-      setNapText(formattedtimeToNext);
+      const newText = "Time to sleep: " + formattedtimeToNext;
+      setNapText(newText);
       fireSetData();
     }
   }, [nap]);
 
   const onHandleTimer = () => {
     if (timerOn) {
+      Notifications.cancelAllScheduledNotificationsAsync();
       if (type === "SleepingTimer") {
         HandleNotification({ setNap, flag });
       }
@@ -99,9 +101,9 @@ export const NewStopwatch = ({ type, val }) => {
       onHandleSendData();
     } else {
       if (type === "SleepingTimer") {
-        Notifications.cancelAllScheduledNotificationsAsync();
         setNapText("");
       }
+      Notifications.cancelAllScheduledNotificationsAsync();
       setTimerOn(true);
       setTimer(0);
       setButtonState("Stop");
@@ -109,8 +111,9 @@ export const NewStopwatch = ({ type, val }) => {
         setDateStart(Date.now());
       }
       const newForm = format(new Date(), "h:mm aaaaa'm'");
-
-      setTime(newForm);
+      if (time !== formattedDate.current) {
+        setTime(newForm);
+      }
     }
   };
 
@@ -119,6 +122,7 @@ export const NewStopwatch = ({ type, val }) => {
       await setDoc(doc(database, val, user), {
         dateStart,
         time,
+        wakeUpAt,
       });
     } else {
       if (newNap && type === "SleepingTimer") {
@@ -137,8 +141,8 @@ export const NewStopwatch = ({ type, val }) => {
   const getData = async () => {
     const docRef = doc(database, val, user);
     const docSnap = await getDoc(docRef);
-    const data = docSnap.data();
-    if (data.dateStart) {
+    if (docSnap.exists() && docSnap.data().dateStart !== undefined) {
+      const data = docSnap.data();
       setDateStart(data.dateStart);
       setTime(data.time);
       setTimerOn(true);
@@ -170,8 +174,8 @@ export const NewStopwatch = ({ type, val }) => {
       Alert.alert("Time refers to previous day");
       setDateStart(date.getTime() - 86400000);
     }
-    const formattedDate = format(date, "h:mm aaaaa'm'");
-    setTime(formattedDate);
+    formattedDate.current = format(date, "h:mm aaaaa'm'");
+    setTime(formattedDate.current);
     // setTimerOn(false);
     // setButtonState("Start");
     // setTimer(0);
