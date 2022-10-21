@@ -48,6 +48,7 @@ export const NewStopwatch = ({ type, val }) => {
   const [time, setTime] = useState(formatted);
   const [timerOn, setTimerOn] = useState();
   const [nap, setNap] = useState();
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     // Stopwatch Function
@@ -67,10 +68,18 @@ export const NewStopwatch = ({ type, val }) => {
   useEffect(() => {
     // Sends data to db when timer starts
     if (buttonState === "Stop") {
-      wakeUpAt = 10192879817;
       fireSetData();
     }
+    return () => {
+      fireSetData();
+    };
   }, [buttonState]);
+
+  useEffect(() => {
+    if (type === "FeedingTimer" && refresh) {
+      fireSetData();
+    }
+  });
 
   useEffect(() => {
     // gets db data on startup
@@ -93,6 +102,10 @@ export const NewStopwatch = ({ type, val }) => {
       if (type === "SleepingTimer") {
         HandleNotification({ setNap, flag });
       }
+      if (type === "FeedingTimer") {
+        setRefresh(true);
+      }
+
       setTimerOn(false);
       setTimer(0);
       setTime(formatted);
@@ -110,6 +123,9 @@ export const NewStopwatch = ({ type, val }) => {
       if (!dateStart) {
         setDateStart(Date.now());
       }
+      if (type === "FeedingTimer") {
+        setRefresh(false);
+      }
       const newForm = format(new Date(), "h:mm aaaaa'm'");
       if (time !== formattedDate.current) {
         setTime(newForm);
@@ -118,19 +134,17 @@ export const NewStopwatch = ({ type, val }) => {
   };
 
   const fireSetData = async () => {
-    if (dateStart) {
+    if (timerOn) {
       await setDoc(doc(database, val, user), {
         dateStart,
         time,
-        wakeUpAt,
       });
     } else {
       if (newNap && type === "SleepingTimer") {
         await setDoc(doc(database, val, user), {
           newNap,
         });
-      }
-      if (type === "FeedingTimer") {
+      } else if (refresh && type === "FeedingTimer") {
         if (doc(database, "CurrentFeed", user)) {
           await deleteDoc(doc(database, "CurrentFeed", user));
         }
