@@ -2,10 +2,10 @@ import React, { useEffect, useContext } from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
-import { NewStopwatch } from "../../components/TimerListComponent/NewStopwatch";
+import { StopwatchSleep } from "../../components/TimerListComponent/StopwatchSleep";
 import { BackgroundGradient } from "../../components/reusable/BackgroundGradient";
 import { SafeArea } from "../../components/utils/SafeArea";
-import { AdsComponent } from "../../components/reusable/Ads";
+import AdsComponent from "../../components/reusable/Ads";
 
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -52,9 +52,9 @@ export const SleepScreen = ({ navigation: { goBack } }) => {
           <HeaderContainer>
             <HeaderText>Sleep</HeaderText>
           </HeaderContainer>
-          <NewStopwatch type="SleepingTimer" val="CurrentSleep" />
+          <StopwatchSleep />
           <AdsContainer>
-            <AdsComponent size="largeBanner" />
+            <AdsComponent />
           </AdsContainer>
         </Container>
       </SafeArea>
@@ -91,6 +91,7 @@ const HeaderText = styled(Text)`
 const AdsContainer = styled(View)`
   justify-content: center;
   align-items: center;
+  margin-bottom: 10%;
 `;
 
 const BackButtonContainer = styled(View)`

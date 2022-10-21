@@ -21,7 +21,7 @@ import {
 } from "firebase/firestore";
 
 import * as Notifications from "expo-notifications";
-import { AdsComponent } from "../../components/reusable/Ads";
+import AdsComponent from "../../components/reusable/Ads";
 
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
@@ -80,7 +80,7 @@ export const HomeScreen = ({ navigation }) => {
           <CardList goToPage={navigation.navigate} />
           <Button onPress={onHandleSignOut}>Log Out</Button>
           <Button onPress={userDeleteAlert}>Delete Account</Button>
-          <AdsComponent size="largeBanner" />
+          <AdsComponent />
         </CardListContainer>
       </SafeArea>
     </BackgroundGradient>

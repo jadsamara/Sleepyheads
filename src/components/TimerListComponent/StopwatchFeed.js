@@ -1,5 +1,5 @@
 // Stopwatch front end for sleeping screen
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Text,
   View,
@@ -11,7 +11,6 @@ import {
 import styled from "styled-components/native";
 
 import { TimerCardList } from "./TimerCardList";
-import { HandleNotification } from "../reusable/HandleNotification";
 
 import { auth, database } from "../../config/firebase";
 import {
@@ -24,30 +23,23 @@ import {
 } from "firebase/firestore";
 
 import { format } from "date-fns";
-import * as Notifications from "expo-notifications";
 import DatePicker from "react-native-date-picker";
 import uuid from "react-native-uuid";
 
-import { TimerContext } from "./TimerProvider";
-
-export const NewStopwatch = ({ type, val }) => {
+export const StopwatchFeed = ({ type, val }) => {
   const user = auth.currentUser.email;
   const formatted = format(new Date(), "h:mm aaaaa'm'");
 
   let interval = null;
-  let newNap = null;
-  let wakeUpAt = null;
 
   const formattedDate = useRef();
 
-  const { setNapText, flag } = useContext(TimerContext);
   const [buttonState, setButtonState] = useState("Start");
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [timer, setTimer] = useState(0);
   const [dateStart, setDateStart] = useState();
   const [time, setTime] = useState(formatted);
   const [timerOn, setTimerOn] = useState();
-  const [nap, setNap] = useState();
   const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
@@ -63,7 +55,18 @@ export const NewStopwatch = ({ type, val }) => {
     return () => {
       clearInterval(interval);
     };
-  }, [dateStart, type, timerOn]);
+  }, [dateStart, timerOn]);
+
+  useEffect(() => {
+    if (refresh) {
+      fireSetData();
+    }
+  }, [refresh]);
+
+  useEffect(() => {
+    // gets db data on startup
+    getData();
+  }, []);
 
   useEffect(() => {
     // Sends data to db when timer starts
@@ -75,36 +78,9 @@ export const NewStopwatch = ({ type, val }) => {
     };
   }, [buttonState]);
 
-  useEffect(() => {
-    if (type === "FeedingTimer" && refresh) {
-      fireSetData();
-    }
-  });
-
-  useEffect(() => {
-    // gets db data on startup
-    getData();
-  }, []);
-
-  useEffect(() => {
-    if (nap && type === "SleepingTimer") {
-      newNap = nap;
-      const formattedtimeToNext = format(newNap, "h:mm aaaaa'm'");
-      const newText = "Time to sleep: " + formattedtimeToNext;
-      setNapText(newText);
-      fireSetData();
-    }
-  }, [nap]);
-
   const onHandleTimer = () => {
     if (timerOn) {
-      Notifications.cancelAllScheduledNotificationsAsync();
-      if (type === "SleepingTimer") {
-        HandleNotification({ setNap, flag });
-      }
-      if (type === "FeedingTimer") {
-        setRefresh(true);
-      }
+      setRefresh(true);
 
       setTimerOn(false);
       setTimer(0);
@@ -113,19 +89,15 @@ export const NewStopwatch = ({ type, val }) => {
       setButtonState("Start");
       onHandleSendData();
     } else {
-      if (type === "SleepingTimer") {
-        setNapText("");
-      }
-      Notifications.cancelAllScheduledNotificationsAsync();
       setTimerOn(true);
       setTimer(0);
       setButtonState("Stop");
       if (!dateStart) {
         setDateStart(Date.now());
       }
-      if (type === "FeedingTimer") {
-        setRefresh(false);
-      }
+
+      setRefresh(false);
+
       const newForm = format(new Date(), "h:mm aaaaa'm'");
       if (time !== formattedDate.current) {
         setTime(newForm);
@@ -135,25 +107,19 @@ export const NewStopwatch = ({ type, val }) => {
 
   const fireSetData = async () => {
     if (timerOn) {
-      await setDoc(doc(database, val, user), {
+      await setDoc(doc(database, "CurrentFeed", user), {
         dateStart,
         time,
       });
-    } else {
-      if (newNap && type === "SleepingTimer") {
-        await setDoc(doc(database, val, user), {
-          newNap,
-        });
-      } else if (refresh && type === "FeedingTimer") {
-        if (doc(database, "CurrentFeed", user)) {
-          await deleteDoc(doc(database, "CurrentFeed", user));
-        }
+    } else if (refresh) {
+      if (doc(database, "CurrentFeed", user)) {
+        await deleteDoc(doc(database, "CurrentFeed", user));
       }
     }
   };
 
   const getData = async () => {
-    const docRef = doc(database, val, user);
+    const docRef = doc(database, "CurrentFeed", user);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists() && docSnap.data().dateStart !== undefined) {
       const data = docSnap.data();
@@ -170,7 +136,7 @@ export const NewStopwatch = ({ type, val }) => {
   const onHandleSendData = async () => {
     const dateEnd = Date.now();
     const randomID = uuid.v4();
-    await addDoc(collection(database, type), {
+    await addDoc(collection(database, "FeedingTimer"), {
       user,
       timerData,
       time,
@@ -241,7 +207,7 @@ export const NewStopwatch = ({ type, val }) => {
               <TimerText>{buttonState}</TimerText>
             </StartStopButton>
           </ButtonContainer>
-          <TimerCardList buttonState={buttonState} type={type} />
+          <TimerCardList buttonState={buttonState} type="FeedingTimer" />
         </SleepListScroll>
       </ScrollContainer>
       <DatePicker

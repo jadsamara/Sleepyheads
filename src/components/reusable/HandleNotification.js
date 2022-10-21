@@ -16,16 +16,15 @@ import * as Notifications from "expo-notifications";
 let trigger = null;
 
 export const HandleNotification = async ({
-  setNap,
   flag,
   editedOn,
   date,
   setNapText,
 }) => {
-  onHandleSleep(setNap, flag, editedOn, date, setNapText);
+  onHandleSleep(flag, editedOn, date, setNapText);
 };
 
-const onHandleSleep = async (setNap, flag, editedOn, date, setNapText) => {
+const onHandleSleep = async (flag, editedOn, date, setNapText) => {
   const user = auth.currentUser.email;
 
   const docRefBabies = doc(database, "babies", user);
@@ -35,14 +34,16 @@ const onHandleSleep = async (setNap, flag, editedOn, date, setNapText) => {
     const birth = parse(dob, "MM/dd/yyyy", new Date());
     const month = differenceInMonths(new Date(), birth);
     if (flag) {
-      threeDayDataFunc({ setNap, month, editedOn, date, setNapText });
+      console.log("hi");
+      threeDayDataFunc({ month, editedOn, date, setNapText });
     } else {
-      handleNextNap({ month, setNap, setNapText, date, editedOn });
+      handleNextNap({ month, setNapText, date, editedOn });
     }
   }
 };
 
-const handleNextNap = async ({ month, setNap, setNapText, date, editedOn }) => {
+const handleNextNap = async ({ month, setNapText, date, editedOn }) => {
+  const user = auth.currentUser.email;
   if (!editedOn) {
     if (month === 0) {
       trigger = Date.now() + 1500000;
@@ -78,12 +79,7 @@ const handleNextNap = async ({ month, setNap, setNapText, date, editedOn }) => {
     } else if (month > 18 && month <= 36) {
       trigger = Date.now() + 19800000;
     }
-
-    sendPushNotification(trigger);
-    setNap(trigger + 900000);
-    // setNap(trigger);
   } else {
-    const user = auth.currentUser.email;
     if (month === 0) {
       trigger = date.getTime() + 1500000;
       // trigger = Date.now() + 10000;
@@ -118,24 +114,17 @@ const handleNextNap = async ({ month, setNap, setNapText, date, editedOn }) => {
     } else if (month > 18 && month <= 30) {
       trigger = date.getTime() + 19800000;
     }
-
-    sendPushNotification(trigger);
-    const newNap = trigger + 900000;
-    const formattedtimeToNext = format(newNap, "h:mm aaaaa'm'");
-    setNapText(formattedtimeToNext);
-    await setDoc(doc(database, "CurrentSleep", user), {
-      newNap,
-    });
   }
+  sendPushNotification(trigger);
+  const newNap = trigger + 900000;
+  const formattedtimeToNext = format(newNap, "h:mm aaaaa'm'");
+  setNapText("Time to sleep " + formattedtimeToNext);
+  await setDoc(doc(database, "CurrentSleep", user), {
+    newNap,
+  });
 };
 
-const threeDayDataFunc = async ({
-  setNap,
-  month,
-  editedOn,
-  date,
-  setNapText,
-}) => {
+const threeDayDataFunc = async ({ month, editedOn, date, setNapText }) => {
   const user = auth.currentUser.email;
 
   const tempOne = [];
@@ -177,7 +166,6 @@ const threeDayDataFunc = async ({
     tempOne,
     tempTwo,
     tempThree,
-    setNap,
     month,
     editedOn,
     date,
@@ -189,7 +177,6 @@ const medianAwakeTime = ({
   tempOne,
   tempTwo,
   tempThree,
-  setNap,
   month,
   editedOn,
   date,
@@ -214,20 +201,14 @@ const medianAwakeTime = ({
   const totalMai = maiOne + maiTwo + maiThree;
   mar = totalMai / 3;
 
-  threeDayNextNap({ month, setNap, mar, date, setNapText, editedOn });
+  threeDayNextNap({ month, mar, date, setNapText, editedOn });
 };
 
-const threeDayNextNap = async ({
-  month,
-  setNap,
-  mar,
-  date,
-  setNapText,
-  editedOn,
-}) => {
+const threeDayNextNap = async ({ month, mar, date, setNapText, editedOn }) => {
   let min = 0;
   let max = 0;
   let napAt = 0;
+  const user = auth.currentUser.email;
 
   if (!editedOn) {
     if (month === 0) {
@@ -391,12 +372,7 @@ const threeDayNextNap = async ({
         napAt = max + Date.now();
       }
     }
-    setNap(napAt);
-    trigger = napAt - 900000;
-    sendPushNotification(trigger);
   } else {
-    const user = auth.currentUser.email;
-
     if (month === 0) {
       min = 1200000;
       max = 3600000;
@@ -558,15 +534,15 @@ const threeDayNextNap = async ({
         napAt = max + date.getTime();
       }
     }
-    trigger = napAt - 900000;
-    sendPushNotification(trigger);
-
-    const formattedtimeToNext = format(napAt, "h:mm aaaaa'm'");
-    setNapText(formattedtimeToNext);
-    await setDoc(doc(database, "CurrentSleep", user), {
-      newNap: napAt,
-    });
   }
+  trigger = napAt - 900000;
+  sendPushNotification(trigger);
+
+  const formattedtimeToNext = format(napAt, "h:mm aaaaa'm'");
+  setNapText("Time to sleep " + formattedtimeToNext);
+  await setDoc(doc(database, "CurrentSleep", user), {
+    newNap: napAt,
+  });
 };
 
 async function sendPushNotification(trigger) {

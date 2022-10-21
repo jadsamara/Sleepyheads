@@ -2,10 +2,10 @@ import React from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
-import { NewStopwatch } from "../../components/TimerListComponent/NewStopwatch";
+import { StopwatchFeed } from "../../components/TimerListComponent/StopwatchFeed";
 
 import { MaterialIcons } from "@expo/vector-icons";
-import { AdsComponent } from "../../components/reusable/Ads";
+import AdsComponent from "../../components/reusable/Ads";
 
 import { BackgroundGradient } from "../../components/reusable/BackgroundGradient";
 import { SafeArea } from "../../components/utils/SafeArea";
@@ -23,9 +23,9 @@ export const FeedingScreen = ({ navigation: { goBack } }) => {
           <HeaderContainer>
             <HeaderText>Feeding</HeaderText>
           </HeaderContainer>
-          <NewStopwatch type="FeedingTimer" val="CurrentFeed" />
+          <StopwatchFeed />
           <AdsContainer>
-            <AdsComponent size="largeBanner" />
+            <AdsComponent />
           </AdsContainer>
         </Container>
       </SafeArea>
@@ -57,6 +57,7 @@ const HeaderText = styled(Text)`
 const AdsContainer = styled(View)`
   justify-content: center;
   align-items: center;
+  margin-bottom: 10%;
 `;
 
 const BackButtonContainer = styled(View)`
