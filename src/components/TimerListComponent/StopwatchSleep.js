@@ -33,7 +33,7 @@ export const StopwatchSleep = () => {
 
   const formattedDate = useRef();
 
-  const { setNapText, flag } = useContext(TimerContext);
+  const { setNapText, flag, napText } = useContext(TimerContext);
   const [buttonState, setButtonState] = useState("Start");
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [timer, setTimer] = useState(0);
@@ -73,16 +73,6 @@ export const StopwatchSleep = () => {
     };
   }, [buttonState]);
 
-  useEffect(() => {
-    if (nap && !timerOn) {
-      newNap = nap;
-      const formattedtimeToNext = format(newNap, "h:mm aaaaa'm'");
-      const newText = "Time to sleep: " + formattedtimeToNext;
-      setNapText(newText);
-      fireSetData();
-    }
-  }, [nap]);
-
   const onHandleTimer = () => {
     if (timerOn) {
       Notifications.cancelAllScheduledNotificationsAsync();
@@ -94,7 +84,7 @@ export const StopwatchSleep = () => {
       setButtonState("Start");
       onHandleSendData();
     } else {
-      setNapText("s");
+      setNapText("Wake up at");
       Notifications.cancelAllScheduledNotificationsAsync();
       setTimerOn(true);
       setTimer(0);
@@ -115,10 +105,6 @@ export const StopwatchSleep = () => {
         dateStart,
         time,
         wakeUpAt,
-      });
-    } else if (newNap) {
-      await setDoc(doc(database, "CurrentSleep", user), {
-        newNap,
       });
     }
   };

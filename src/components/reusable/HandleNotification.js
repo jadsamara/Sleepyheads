@@ -9,7 +9,7 @@ import {
   orderBy,
   setDoc,
 } from "firebase/firestore";
-import { parse, differenceInMonths, format } from "date-fns";
+import { parse, differenceInMonths, format, differenceInWeeks } from "date-fns";
 
 import * as Notifications from "expo-notifications";
 
@@ -33,90 +33,91 @@ const onHandleSleep = async (flag, editedOn, date, setNapText) => {
   if (dob) {
     const birth = parse(dob, "MM/dd/yyyy", new Date());
     const month = differenceInMonths(new Date(), birth);
+    const week = differenceInWeeks(new Date(), birth);
+    console.log(week);
     if (flag) {
-      console.log("hi");
       threeDayDataFunc({ month, editedOn, date, setNapText });
     } else {
-      handleNextNap({ month, setNapText, date, editedOn });
+      handleNextNap({ month, setNapText, date, editedOn, week });
     }
   }
 };
 
-const handleNextNap = async ({ month, setNapText, date, editedOn }) => {
+const handleNextNap = async ({ month, setNapText, date, editedOn, week }) => {
   const user = auth.currentUser.email;
   if (!editedOn) {
     if (month === 0) {
-      trigger = Date.now() + 1500000;
+      trigger = Date.now() + 2400000;
       // trigger = Date.now() + 10000;
     } else if (month > 0 && month <= 1) {
-      trigger = Date.now() + 2400000;
+      trigger = Date.now() + 3300000;
     } else if (month > 1 && month <= 2) {
-      trigger = Date.now() + 3900000;
-    } else if (month > 2 && month <= 3) {
       trigger = Date.now() + 4800000;
+    } else if (month > 2 && month <= 3) {
+      trigger = Date.now() + 5700000;
     } else if (month > 3 && month <= 4) {
-      trigger = Date.now() + 5550000;
+      trigger = Date.now() + 6450000;
     } else if (month > 4 && month <= 5) {
-      trigger = Date.now() + 6300000;
+      trigger = Date.now() + 7200000;
     } else if (month > 5 && month <= 6) {
-      trigger = Date.now() + 9450000;
+      trigger = Date.now() + 10350000;
     } else if (month > 6 && month <= 7) {
-      trigger = Date.now() + 10800000;
+      trigger = Date.now() + 11700000;
     } else if (month > 7 && month <= 8) {
-      trigger = Date.now() + 12300000;
+      trigger = Date.now() + 13200000;
     } else if (month > 8 && month <= 9) {
-      trigger = Date.now() + 12900000;
+      trigger = Date.now() + 13800000;
     } else if (month > 9 && month <= 10) {
-      trigger = Date.now() + 14400000;
-    } else if (month > 10 && month <= 11) {
       trigger = Date.now() + 15300000;
-    } else if (month > 11 && month <= 12) {
+    } else if (month > 10 && month <= 11) {
       trigger = Date.now() + 16200000;
-    } else if (month > 12 && month <= 17) {
-      trigger = Date.now() + 18000000;
-    } else if (month > 17 && month <= 18) {
-      trigger = Date.now() + 19800000;
+    } else if (month > 11 && month <= 12) {
+      trigger = Date.now() + 17100000;
+    } else if (month > 12 && month <= 13) {
+      trigger = Date.now() + 18900000;
+    } else if (month > 13 && month <= 18) {
+      trigger = Date.now() + 20700000;
     } else if (month > 18 && month <= 36) {
-      trigger = Date.now() + 19800000;
+      trigger = Date.now() + 20700000;
     }
   } else {
     if (month === 0) {
-      trigger = date.getTime() + 1500000;
+      trigger = date.getTime() + 2400000;
       // trigger = Date.now() + 10000;
     } else if (month > 0 && month <= 1) {
-      trigger = date.getTime() + 2400000;
+      trigger = date.getTime() + 3300000;
     } else if (month > 1 && month <= 2) {
-      trigger = date.getTime() + 3900000;
-    } else if (month > 2 && month <= 3) {
       trigger = date.getTime() + 4800000;
+    } else if (month > 2 && month <= 3) {
+      trigger = date.getTime() + 5700000;
     } else if (month > 3 && month <= 4) {
-      trigger = date.getTime() + 5550000;
+      trigger = date.getTime() + 6450000;
     } else if (month > 4 && month <= 5) {
-      trigger = date.getTime() + 6300000;
+      trigger = date.getTime() + 7200000;
     } else if (month > 5 && month <= 6) {
-      trigger = date.getTime() + 9450000;
+      trigger = date.getTime() + 10350000;
     } else if (month > 6 && month <= 7) {
-      trigger = date.getTime() + 10800000;
+      trigger = date.getTime() + 11700000;
     } else if (month > 7 && month <= 8) {
-      trigger = date.getTime() + 12300000;
+      trigger = date.getTime() + 13200000;
     } else if (month > 8 && month <= 9) {
-      trigger = date.getTime() + 12900000;
+      trigger = date.getTime() + 13800000;
     } else if (month > 9 && month <= 10) {
-      trigger = date.getTime() + 14400000;
-    } else if (month > 10 && month <= 11) {
       trigger = date.getTime() + 15300000;
-    } else if (month > 11 && month <= 12) {
+    } else if (month > 10 && month <= 11) {
       trigger = date.getTime() + 16200000;
-    } else if (month > 12 && month <= 17) {
-      trigger = date.getTime() + 18000000;
-    } else if (month > 17 && month <= 18) {
-      trigger = date.getTime() + 19800000;
+    } else if (month > 11 && month <= 12) {
+      trigger = date.getTime() + 17100000;
+    } else if (month > 12 && month <= 13) {
+      trigger = date.getTime() + 18900000;
+    } else if (month > 13 && month <= 18) {
+      trigger = date.getTime() + 20700000;
     } else if (month > 18 && month <= 30) {
-      trigger = date.getTime() + 19800000;
+      trigger = date.getTime() + 20700000;
     }
   }
-  sendPushNotification(trigger);
-  const newNap = trigger + 900000;
+  sendPushNotification(trigger - 900000);
+  const newNap = trigger;
   const formattedtimeToNext = format(newNap, "h:mm aaaaa'm'");
   setNapText("Time to sleep " + formattedtimeToNext);
   await setDoc(doc(database, "CurrentSleep", user), {
@@ -151,11 +152,9 @@ const threeDayDataFunc = async ({ month, editedOn, date, setNapText }) => {
 
     if (formattedDateOne === formatted) {
       tempOne.push(data);
-    }
-    if (formattedDateTwo === formatted) {
+    } else if (formattedDateTwo === formatted) {
       tempTwo.push(data);
-    }
-    if (formattedDateThree === formatted) {
+    } else if (formattedDateThree === formatted) {
       tempThree.push(data);
     }
   });
@@ -341,7 +340,7 @@ const threeDayNextNap = async ({ month, mar, date, setNapText, editedOn }) => {
       } else if (mar > max) {
         napAt = max + Date.now();
       }
-    } else if (month > 12 && month <= 17) {
+    } else if (month > 12 && month <= 13) {
       min = 14400000;
       max = 23400000;
       if (min <= mar && mar <= max) {
@@ -351,7 +350,7 @@ const threeDayNextNap = async ({ month, mar, date, setNapText, editedOn }) => {
       } else if (mar > max) {
         napAt = max + Date.now();
       }
-    } else if (month > 17 && month <= 18) {
+    } else if (month > 13 && month <= 18) {
       min = 18000000;
       max = 23400000;
       if (min <= mar && mar <= max) {
@@ -503,7 +502,7 @@ const threeDayNextNap = async ({ month, mar, date, setNapText, editedOn }) => {
       } else if (mar > max) {
         napAt = max + date.getTime();
       }
-    } else if (month > 12 && month <= 17) {
+    } else if (month > 12 && month <= 13) {
       min = 14400000;
       max = 23400000;
       if (min <= mar && mar <= max) {
@@ -513,7 +512,7 @@ const threeDayNextNap = async ({ month, mar, date, setNapText, editedOn }) => {
       } else if (mar > max) {
         napAt = max + date.getTime();
       }
-    } else if (month > 17 && month <= 18) {
+    } else if (month > 13 && month <= 18) {
       min = 18000000;
       max = 23400000;
       if (min <= mar && mar <= max) {
