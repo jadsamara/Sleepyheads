@@ -68,5 +68,5 @@ const IconButtonContainer = styled(View)`
 `;
 
 const IconButton = styled(TouchableOpacity)`
-  margin-right: 15px;
+  margin-right: 10px;
 `;

@@ -19,6 +19,10 @@ export const SleepScreen = ({ navigation: { goBack } }) => {
   const user = auth.currentUser.email;
   const { napText, setNapText } = useContext(TimerContext);
 
+  useEffect(() => {
+    getData();
+  }, []);
+
   const getData = async () => {
     const docRef = doc(database, "CurrentSleep", user);
     const docSnap = await getDoc(docRef);
@@ -27,15 +31,19 @@ export const SleepScreen = ({ navigation: { goBack } }) => {
       const data = docSnap.data();
       if (data.newNap && data.newNap > Date.now() - 86400000) {
         const formattedtimeToNext = format(data.newNap, "h:mm aaaaa'm'");
-        const newText = "Time to sleep: " + formattedtimeToNext;
+        const newText = "Time to sleep " + formattedtimeToNext;
+        setNapText(newText);
+      } else if (data.wake && data.wake > Date.now() - 86400000) {
+        const formattedtimeToNext = format(data.wake, "h:mm aaaaa'm'");
+        const newText = "Wake up " + formattedtimeToNext;
+        setNapText(newText);
+      } else if (data.bedTime) {
+        const formattedtimeToNext = format(data.bedTime, "h:mm aaaaa'm'");
+        const newText = "Bedtime at " + formattedtimeToNext;
         setNapText(newText);
       }
     }
   };
-
-  useEffect(() => {
-    getData();
-  }, []);
 
   return (
     <BackgroundGradient>

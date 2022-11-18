@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
-import { View, Alert } from "react-native";
+import { Alert, View } from "react-native";
+
 import styled from "styled-components/native";
 
 import { BackgroundGradient } from "../../components/reusable/BackgroundGradient";

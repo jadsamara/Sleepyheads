@@ -2,11 +2,10 @@ import React, { useEffect, useState, useContext } from "react";
 import { View, FlatList, Alert, Dimensions } from "react-native";
 import styled from "styled-components/native";
 
-import * as Notifications from "expo-notifications";
-
 import { TimerContext } from "./TimerProvider";
+
 import { TimerCard } from "./TimerCard";
-import { HandleNotification } from "../reusable/HandleNotification";
+import { nextNapFunc } from "../reusable/nextNapFunc";
 
 import DatePicker from "react-native-date-picker";
 import { format } from "date-fns";
@@ -22,11 +21,13 @@ import {
   updateDoc,
   doc,
 } from "firebase/firestore";
+import { threeDayFunc } from "./threeDayData";
 
 export const TimerCardList = ({ buttonState, type }) => {
   const user = auth.currentUser.email;
 
   const { setNapText, flag } = useContext(TimerContext);
+
   const [arr, setArr] = useState([]);
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [refresh, setRefresh] = useState(false);
@@ -101,9 +102,10 @@ export const TimerCardList = ({ buttonState, type }) => {
         await updateDoc(doc.ref, data);
         setRefresh(true);
       });
-      Notifications.cancelAllScheduledNotificationsAsync();
-      if (type === "SleepingTimer") {
-        HandleNotification({ setNapText, flag, editedOn, date });
+      if (type === "SleepingTimer" && !flag) {
+        nextNapFunc({ setNapText, editedOn, date });
+      } else if (type === "SleepingTimer" && flag) {
+        threeDayFunc({ setNapText, editedOn, date });
       }
     } else {
       Alert.alert("Cannot have end time less than start time");

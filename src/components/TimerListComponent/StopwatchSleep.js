@@ -11,45 +11,49 @@ import {
 import styled from "styled-components/native";
 
 import { TimerCardList } from "./TimerCardList";
-import { HandleNotification } from "../reusable/HandleNotification";
+import { nextNapFunc } from "../reusable/nextNapFunc";
 
 import { auth, database } from "../../config/firebase";
 import { collection, addDoc, doc, setDoc, getDoc } from "firebase/firestore";
 
 import { format } from "date-fns";
-import * as Notifications from "expo-notifications";
 import DatePicker from "react-native-date-picker";
 import uuid from "react-native-uuid";
 
 import { TimerContext } from "./TimerProvider";
+import { threeDayFunc } from "./threeDayData";
 
 export const StopwatchSleep = () => {
   const user = auth.currentUser.email;
   const formatted = format(new Date(), "h:mm aaaaa'm'");
 
   let interval = null;
-  let newNap = null;
-  let wakeUpAt = null;
+  // let formattedDate = 0;
 
   const formattedDate = useRef();
 
-  const { setNapText, flag, napText } = useContext(TimerContext);
+  const { setNapText, flag } = useContext(TimerContext);
+
   const [buttonState, setButtonState] = useState("Start");
   const [openDatePicker, setOpenDatePicker] = useState(false);
   const [timer, setTimer] = useState(0);
   const [dateStart, setDateStart] = useState();
   const [time, setTime] = useState(formatted);
   const [timerOn, setTimerOn] = useState();
-  const [nap, setNap] = useState();
+  const [wake, setWake] = useState();
 
   useEffect(() => {
-    // Stopwatch Function
+    getData();
+  }, []);
+
+  // Stopwatch (Increments Time Value)
+  useEffect(() => {
     const updateElapsedTime = () => {
       setTimer(Date.now() - dateStart + timer);
     };
 
     if (timerOn) {
-      interval = setInterval(updateElapsedTime, 1000);
+      interval = setInterval(updateElapsedTime, 100);
     }
 
     return () => {
@@ -58,34 +62,30 @@ export const StopwatchSleep = () => {
   }, [dateStart, timerOn]);
 
   useEffect(() => {
-    // gets db data on startup
-    getData();
-  }, []);
-
-  useEffect(() => {
     // Sends data to db when timer starts
     if (buttonState === "Stop") {
-      wakeUpAt = 10000123;
       fireSetData();
     }
-    return () => {
-      fireSetData();
-    };
   }, [buttonState]);
+
+  useEffect(() => {
+    fireSetData();
+  }, [wake, time]);
 
   const onHandleTimer = () => {
     if (timerOn) {
-      Notifications.cancelAllScheduledNotificationsAsync();
-      HandleNotification({ setNapText, flag });
+      if (!flag) {
+        nextNapFunc({ setNapText, dateStart });
+      } else if (flag) {
+        threeDayFunc({ setNapText });
+      }
       setTimerOn(false);
       setTimer(0);
+      setDateStart(0);
       setTime(formatted);
-      setDateStart(null);
       setButtonState("Start");
       onHandleSendData();
     } else {
-      setNapText("Wake up at");
-      Notifications.cancelAllScheduledNotificationsAsync();
       setTimerOn(true);
       setTimer(0);
       setButtonState("Stop");
@@ -96,15 +96,21 @@ export const StopwatchSleep = () => {
       if (time !== formattedDate.current) {
         setTime(newForm);
       }
+      let type = "wake";
+      if (!flag) {
+        nextNapFunc({ setNapText, type, dateStart, setWake });
+      } else {
+        threeDayFunc({ setNapText, type, dateStart, setWake });
+      }
     }
   };
 
   const fireSetData = async () => {
-    if (timerOn) {
+    if (timerOn && wake) {
       await setDoc(doc(database, "CurrentSleep", user), {
         dateStart,
         time,
-        wakeUpAt,
+        wake,
       });
     }
   };
@@ -139,17 +145,15 @@ export const StopwatchSleep = () => {
 
   const confirmDate = (date) => {
     setOpenDatePicker(false);
+    formattedDate.current = format(date, "h:mm aaaaa'm'");
+    setTime(formattedDate.current);
+    setTimer(0);
     if (date < Date.now()) {
       setDateStart(date.getTime());
     } else {
       Alert.alert("Time refers to previous day");
       setDateStart(date.getTime() - 86400000);
     }
-    formattedDate.current = format(date, "h:mm aaaaa'm'");
-    setTime(formattedDate.current);
-    // setTimerOn(false);
-    // setButtonState("Start");
-    // setTimer(0);
   };
 
   const onHandleOpenDate = () => {

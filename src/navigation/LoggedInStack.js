@@ -1,5 +1,6 @@
 // Navigation for logged in users
 import React, { useState, useEffect, useRef } from "react";
+import { Alert, Platform, Linking, Modal } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import { HomeScreen } from "../screens/AppScreens/HomeScreen";
@@ -8,10 +9,12 @@ import { SleepScreen } from "../screens/AppScreens/SleepScreen";
 
 import { requestTrackingPermission } from "react-native-tracking-transparency";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 
 import { TimerProvider } from "../components/TimerListComponent/TimerProvider";
+import { GeneralProvider } from "../components/utils/GeneralProvider";
 
 const Stack = createStackNavigator();
 
@@ -28,22 +31,18 @@ export const LoggedInStack = () => {
   const [notification, setNotification] = useState(null);
   const [response, setResponse] = useState(false);
 
+  const [active, setActive] = useState(true);
+
   const notificationListener = useRef();
   const responseListener = useRef();
 
-  const onHandleTracking = async () => {
-    const trackingStatus = await requestTrackingPermission();
-    if (trackingStatus === "authorized" || trackingStatus === "unavailable") {
-      // enable tracking features
-    }
-  };
-
-  useEffect(() => {
-    onHandleTracking();
-  }, []);
-
   useEffect(() => {
     // This listener is fired whenever a notification is received while the app is foregrounded
+
+    if (Platform.OS === "android") {
+      getData();
+    }
+    onHandleTracking();
     registerForPushNotificationsAsync();
 
     notificationListener.current =
@@ -65,6 +64,13 @@ export const LoggedInStack = () => {
     };
   }, []);
 
+  const onHandleTracking = async () => {
+    const trackingStatus = await requestTrackingPermission();
+    if (trackingStatus === "authorized" || trackingStatus === "unavailable") {
+      // enable tracking features
+    }
+  };
+
   const registerForPushNotificationsAsync = async () => {
     if (Device.isDevice) {
       const { status: existingStatus } =
@@ -78,16 +84,66 @@ export const LoggedInStack = () => {
         alert("Failed to get push token for push notification!");
         return;
       }
+      const token = await Notifications.getExpoPushTokenAsync().data;
     }
   };
 
+  const storeData = async (permissionCheck) => {
+    await AsyncStorage.setItem("@permissions", permissionCheck);
+  };
+
+  const getData = async () => {
+    const value = await AsyncStorage.getItem("@permissions");
+    if (value !== "done") {
+      CheckPrivacyAndroid();
+    }
+  };
+
+  const CheckPrivacyAndroid = () => {
+    Alert.alert(
+      "",
+      "Sleepyheads requires to collect and store personal information provided by you. We do not process sensitive information. ",
+      [
+        {
+          text: "Privacy Policy",
+          onPress: () => {
+            {
+              CheckPrivacyAndroid();
+              Linking.openURL(
+                "https://www.pinkasolutions.net/privacypolicysleepyheads"
+              );
+            }
+          },
+        },
+        {
+          text: "Cancel",
+          style: "cancel",
+          onPress: () => onHandleDeclined(),
+        },
+        { text: "OK", onPress: () => onHandleAccepted() },
+      ]
+    );
+  };
+
+  const onHandleAccepted = () => {
+    const permissionCheck = "done";
+    storeData(permissionCheck);
+  };
+
+  const onHandleDeclined = () => {
+    const permissionCheck = "nope";
+    storeData(permissionCheck);
+  };
+
   return (
-    <TimerProvider>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="HomeScreen" component={HomeScreen} />
-        <Stack.Screen name="Feeding" component={FeedingScreen} />
-        <Stack.Screen name="Sleep" component={SleepScreen} />
-      </Stack.Navigator>
-    </TimerProvider>
+    <GeneralProvider>
+      <TimerProvider>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen name="Feeding" component={FeedingScreen} />
+          <Stack.Screen name="Sleep" component={SleepScreen} />
+        </Stack.Navigator>
+      </TimerProvider>
+    </GeneralProvider>
   );
 };
